@@ -1,30 +1,23 @@
-version: '3'
-
+---
+version: "3"
 services:
   freeradius:
     image: goofball222/freeradius
     container_name: freeradius
-    network_mode: bridge
-    restart: unless-stopped
-    ports:
-      - 1812:1812/udp
-      - 1813:1813/udp
+    user: "1000:1000"
+    environment:
+      # - PUID=999
+      # - PGID=999
+      - TZ=Etc/UTC
+#      - RADIUSD_OPTS=-xx # Enable this for FreeRadius extra log verbosity/degub
+      - RADIUSD_OPTS=-X
+    command: apk add -q --no-cache freeradius-eap
     volumes:
       - /etc/localtime:/etc/localtime:ro
-#      - ./clients.conf:/etc/raddb/clients.conf
-#      - ./radiusd.conf:/etc/raddb/radiusd.conf
-#      - ./authorize:/etc/raddb/mods-config/files/authorize
-#      - ./certs:/etc/freeradius/certs
-    environment:
-      - TZ=UTC
-#      - RADIUSD_OPTS=-xx # Enable this for FreeRadius extra log verbosity/degub
+      - ./config/:/etc/raddb
+      - ./logs:/var/log/radius
+    ports:
+      - 10.0.18.12:1812:1812/udp
+      - 10.0.18.12:1813:1813/udp
+    restart: unless-stopped
 
-  freeradius-test:
-    image: goofball222/freeradius
-    container_name: freeradius-test
-    network_mode: bridge
-    depends_on:
-      - freeradius
-    links:
-      - freeradius
-    command: "radtest bob hello freeradius 0 SECRET"
