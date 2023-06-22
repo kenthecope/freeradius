@@ -6,12 +6,11 @@ services:
     container_name: freeradius
     user: "1000:1000"
     environment:
-      # - PUID=999
-      # - PGID=999
+      - PUID=999
+      - PGID=999
       - TZ=Etc/UTC
 #      - RADIUSD_OPTS=-xx # Enable this for FreeRadius extra log verbosity/degub
-      - RADIUSD_OPTS=-X
-    command: apk add -q --no-cache freeradius-eap
+#      - RADIUSD_OPTS=-X
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./config/:/etc/raddb
