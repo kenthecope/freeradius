@@ -15,10 +15,11 @@ fi
 
 echo "INFO - Script version ${VERSION}"
 
-LOGFILE=/var/log/radius/radius.log
 RADIUSD=/usr/sbin/freeradius
+
 CONFIG_DIR=/freeradius/config
 DICT_DIR=/freeradius/share
+LOGFILE=/freeradius/log/radius.log
 
 RADIUSD_OPTS="${RADIUSD_OPTS}"
 
@@ -30,10 +31,13 @@ log "INFO - Script version ${VERSION}"
 
 radiusd_setup() {
     log "INFO - Insuring freeradius setup for container"
+    echo "ID"
+    id
+    echo "END ID"
 
-    touch /var/log/radius/radius.log
+    touch ${LOGFILE}
 
-    RADIUSD_OPTS="-d ${CONFIG_DIR} -D${DICT_DIR} ${RADIUSD_OPTS}"
+    RADIUSD_OPTS="-d ${CONFIG_DIR} -D${DICT_DIR} -l${LOGFILE} ${RADIUSD_OPTS}"
 }
 
 exit_handler() {
@@ -60,6 +64,7 @@ idle_handler() {
 }
 
 trap 'kill ${!}; exit_handler' SIGHUP SIGINT SIGQUIT SIGTERM
+
 
 if [[ "${@}" == 'radiusd' ]];
     then

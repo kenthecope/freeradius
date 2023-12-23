@@ -4,17 +4,18 @@ services:
   freeradius:
     image: freeradius
     container_name: freeradius
-    user: "1000:1000"
+    user: "freerad:freerad"
     environment:
-      - PUID=102
-      - PGID=102
+      - PUID=1000
+      - PGID=1000
       - TZ=Etc/UTC
       - RADIUSD_OPTS=-xx # Enable this for FreeRadius extra log verbosity/degub
       - RADIUSD_OPTS=-X  # Enable for DEBUG
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /home/copek/docker/freeradius/config/:/etc/raddb
-      - /home/copek/docker/freeradius/logs:/var/log/radius
+      - /home/copek/docker/freeradius/config/:/freeradius/config
+      - /home/copek/docker/freeradius/logs:/freeradius/log
+      - /home/copek/docker/freeradius/dictionaries:/freeradius/share
     ports:
       - 1812:1812/udp
       - 18121:18121/udp

@@ -17,22 +17,27 @@ LABEL \
 
 ENV \
     DEBUG=false \
-    PGID=1812 \
-    PUID=1812 \
+    PGID=1000 \
+    PUID=1000 \
     RADIUSD_OPTS=
 
 COPY root /
 
 RUN \
     apt update \
-    && apt-get install -y freeradius freeradius-yubikey freeradius-ldap  freeradius-dhcp freeradius-utils freeradius-postgresql \
-    && mkdir -p /var/log/radius \
-    && chown freerad:freerad /var/log/radius \
-    && mkdir -p /freerad/config \
-    && mkdir -p /freerad/share \
+    && id \
+    && mkdir -p /tmp/freeradius \
+    && mkdir -p /freeradius/config \
+    && mkdir -p /freeradius/share \
+    && mkdir -p /freeradius/log \
+    && groupadd --gid $PGID --gid $PUID -r freerad \
+    && useradd -c "FreeRADIUS"  -b /freeradius -M --gid $PGID --uid $PUID -r -s /usr/sbin/nologin freerad \
     && chown freerad:freerad /freeradius \
     && chown freerad:freerad /freeradius/config \
     && chown freerad:freerad /freeradius/share \
+    && chown freerad:freerad /freeradius/log \
+    && chown freerad:freerad /tmp/freeradius \
+    && apt-get install -y freeradius freeradius-yubikey freeradius-ldap  freeradius-dhcp freeradius-utils freeradius-postgresql \
     && echo "RUN DONE"
 
 
