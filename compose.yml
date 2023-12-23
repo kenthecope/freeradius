@@ -1,0 +1,31 @@
+---
+version: "3"
+services:
+  freeradius:
+    image: freeradius
+    container_name: freeradius
+    user: "1000:1000"
+    environment:
+      - PUID=102
+      - PGID=102
+      - TZ=Etc/UTC
+      - RADIUSD_OPTS=-xx # Enable this for FreeRadius extra log verbosity/degub
+      - RADIUSD_OPTS=-X  # Enable for DEBUG
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/copek/docker/freeradius/config/:/etc/raddb
+      - /home/copek/docker/freeradius/logs:/var/log/radius
+    ports:
+      - 1812:1812/udp
+      - 18121:18121/udp
+      - 1813:1813/udp
+    restart: unless-stopped
+
+  freeradius-test:
+    image: freeradius
+    container_name: freeradius-test
+    depends_on:
+      - freeradius
+    links:
+      - freeradius
+    command: "radtest bob hello freeradius 0 SECRET"
